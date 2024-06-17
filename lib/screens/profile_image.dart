@@ -32,13 +32,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
-  Future<void> _pickImage() async {
-    final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+  _pickImage(bool isCamera) async {
+    final pickedFile;
+
+    if(isCamera) {
+       pickedFile = await _picker.pickImage(source: ImageSource.camera);
+    }
+
+    else{
+      pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+    }
     if (pickedFile != null) {
       setState(() {
         _image = File(pickedFile.path);
       });
-      print(_image);
 
       _saveProfileImage(pickedFile.path);
     }
@@ -86,7 +93,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             SizedBox(height: 20),
             ElevatedButton(
-              onPressed: _pickImage,
+
+              onPressed : () => showDialog<String>(
+                context: context,
+                builder: (BuildContext context) => AlertDialog(
+                  actions: <Widget>[
+                    Row(
+                      children: [
+                        IconButton(
+                          onPressed: () => _pickImage(true),
+                          icon: Icon(Icons.camera_alt_outlined,size: 40,),
+                        ),
+                        IconButton(
+                          onPressed: () => _pickImage(false),
+                          icon: Icon(Icons.photo,size: 40,),
+                        ),
+                      ],
+                    )
+                  ],
+                ),
+              ),
               child: Text('Pick Image'),
             ),
           ],

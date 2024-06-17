@@ -75,6 +75,21 @@ class _Step1FormState extends State<Step1Form> {
   //   super.dispose();
   // }
 
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    if(widget.employeeModel != null){
+      nameController.text = widget.employeeModel.name;
+      emailController.text = widget.employeeModel.email;
+      mobileController.text = widget.employeeModel.mobile;
+      dateOfBirth.text = widget.employeeModel.dob;
+      dropDownValue = widget.employeeModel.values;
+      genderGroupValue = widget.employeeModel.gender;
+      sliderValue = widget.employeeModel.maxage;
+      hobbiesListNewItem = widget.employeeModel.hobbies;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

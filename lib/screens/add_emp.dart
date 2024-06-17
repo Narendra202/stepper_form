@@ -48,20 +48,9 @@ class _EmployeeRegistrationState extends State<EmployeeRegistration> {
     databox = Hive.box('employee');
 
     if(widget.employeeModel != null){
-      print(widget.employeeModel?.hobbies);
 
+     print(widget.index);
 
-      // namefield = widget.employeeModel!.name;
-      // emailfield = widget.employeeModel.email;
-      // mobilefield = widget.employeeModel.mobile;
-      // dateofbirthfield = widget.employeeModel.dob;
-      // dropdownfield = widget.employeeModel.values;
-      // genderfield = widget.employeeModel.gender;
-      // maxAgefield = widget.employeeModel.maxage;
-      // hobbiesfield = widget.employeeModel.hobbies;
-      // countryfield = widget.employeeModel.country;
-      // cityfield = widget.employeeModel.city;
-      // communefield = widget.employeeModel.commune;
     }
   }
 
@@ -127,29 +116,38 @@ class _EmployeeRegistrationState extends State<EmployeeRegistration> {
           onStepContinue: () async{
 
            if(selectedStep == 3 - 1){
-           EmployeeModel data = EmployeeModel(name: namefield, email: emailfield, mobile: mobilefield, dob: dateofbirthfield, values: dropdownfield, gender: genderfield, maxage: maxAgefield,
-                                              hobbies: hobbiesfield, country: countryfield, city: cityfield, commune: communefield);
-           databox.add(data);
 
-           //
-           // namefield = '';
-           // emailfield = '';
-           // mobilefield = '';
-           // dateofbirthfield = '';
-           // dropdownfield = '';
-           // genderfield = '';
-           // maxAgefield;
-           // hobbiesfield;
-           // countryfield = '';
-           // cityfield = '';
-           // communefield = '';
+             if(widget.employeeModel == null) {
+               EmployeeModel data = EmployeeModel(name: namefield,
+                   email: emailfield,
+                   mobile: mobilefield,
+                   dob: dateofbirthfield,
+                   values: dropdownfield,
+                   gender: genderfield,
+                   maxage: maxAgefield,
+                   hobbies: hobbiesfield,
+                   country: countryfield,
+                   city: cityfield,
+                   commune: communefield);
+               databox.add(data);
+             }
 
-           //
-           Navigator.push(
-             context,
-             MaterialPageRoute(builder: (context) => EmployeeList()),
-           );
+             else{
+               EmployeeModel data = EmployeeModel(name: namefield,
+                   email: emailfield,
+                   mobile: mobilefield,
+                   dob: dateofbirthfield,
+                   values: dropdownfield,
+                   gender: genderfield,
+                   maxage: maxAgefield,
+                   hobbies: hobbiesfield,
+                   country: countryfield,
+                   city: cityfield,
+                   commune: communefield);
+                 databox.putAt(widget.index ?? 0, data);
+             }
 
+             Navigator.pop(context);
            }
           else{
              setState(() {
@@ -170,13 +168,13 @@ class _EmployeeRegistrationState extends State<EmployeeRegistration> {
                // content: Text('hello')
                content:Step1Form(nameValue: (value){ namefield = value;}, emailValue: (value){emailfield = value;},mobileValue: (value){mobilefield = value;},
                                   dateofbirthValue: (value){dateofbirthfield = value;}, dropdownValue: (value){dropdownfield = value;},genderValue: (value){genderfield = value;},
-                                  maxAgeValue: (value){maxAgefield = value;},hobbiesValue: (value){hobbiesfield = value;}, )
+                                  maxAgeValue: (value){maxAgefield = value;},hobbiesValue: (value){hobbiesfield = value;}, employeeModel: widget.employeeModel,)
            ),
            Step(
                state : selectedStep > 1 ? StepState.complete : StepState.indexed,
                isActive : selectedStep >= 1,
                title: Text('Step 2'),
-               content: Step2Form(countryName: (value){countryfield = value;}, cityName: (value){cityfield = value;}, communeName: (value){communefield =value;},)
+               content: Step2Form(countryName: (value){countryfield = value;}, cityName: (value){cityfield = value;}, communeName: (value){communefield =value;},employeeModel: widget.employeeModel,)
            ),
            Step(
              state : selectedStep > 2 ? StepState.complete : StepState.indexed,

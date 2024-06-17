@@ -115,7 +115,7 @@ class _EmployeeListState extends State<EmployeeList> {
   _editEmployee(EmployeeModel employeeModel, int index){
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => EmployeeRegistration(employeeModel: employeeModel,)),
+      MaterialPageRoute(builder: (context) => EmployeeRegistration(employeeModel: employeeModel,index: index,)),
     );
   }
 }

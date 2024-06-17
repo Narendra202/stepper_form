@@ -81,6 +81,15 @@ class _Step2FormState extends State<Step2Form> {
     getCoutryList();
     getCity();
     getCommone();
+
+    if(widget.employeeModel != null) {
+      countryValue = widget.employeeModel.country;
+
+      // if(communeValue != null){
+      //   cityValue = widget.employeeModel.city;
+      //   print(cityValue);
+      // }
+    }
   }
 
   @override
@@ -103,6 +112,7 @@ class _Step2FormState extends State<Step2Form> {
                 countryValue = newValue;
                 // print(countryValue);
                 widget.countryName(countryValue);
+
                 for(int i = 0; i < cityList.length ; i++){
                   if(cityList[i]['provinceId'] == countryValue){
                     // print(cityList[i]['_key']);
