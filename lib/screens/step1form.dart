@@ -13,7 +13,7 @@ enum ExerciseFilter { walking, running, cycling, hiking }
 
 
 class Step1Form extends StatefulWidget {
-  const Step1Form( {super.key, required this.nameValue, required this.emailValue, required this.mobileValue, required this.dateofbirthValue,required this.dropdownValue, required this.genderValue, required this.maxAgeValue, required this.hobbiesValue,this.employeeModel});
+  Step1Form( {super.key, required this.nameValue, required this.emailValue, required this.mobileValue, required this.dateofbirthValue,required this.dropdownValue, required this.genderValue, required this.maxAgeValue, required this.hobbiesValue,this.employeeModel, this.form1Key,  });
 
 
   // final void Function(dynamic) onCreate;
@@ -25,7 +25,11 @@ class Step1Form extends StatefulWidget {
   final void Function(dynamic) genderValue;
   final void Function(dynamic) maxAgeValue;
   final void Function(dynamic) hobbiesValue;
+  // final void Function(dynamic) form1Key;
+  final form1Key;
+
   // final void Function(dynamic) genderValue;
+
 
   final employeeModel;
 
@@ -34,6 +38,7 @@ class Step1Form extends StatefulWidget {
 }
 
 class _Step1FormState extends State<Step1Form> {
+
   static TextEditingController nameController = TextEditingController();
   static TextEditingController emailController = TextEditingController();
   static TextEditingController mobileController = TextEditingController();
@@ -68,17 +73,26 @@ class _Step1FormState extends State<Step1Form> {
      });
    }
   }
+  // final _form1Key = GlobalKey<FormState>();
+  bool isEmail(String em) {
+    String p = r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
+    RegExp regExp = new RegExp(p);
+    return regExp.hasMatch(em);
+  }
 
-  // @override
-  // void dispose() {
-  //   // widget.nameController?.dispose();
-  //   super.dispose();
-  // }
+  bool validateMobile(value) {
+
+    String m = r'^[0-9]{10}$';
+    RegExp regExp = new RegExp(m);
+    return regExp.hasMatch(value);
+
+  }
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+
     if(widget.employeeModel != null){
       nameController.text = widget.employeeModel.name;
       emailController.text = widget.employeeModel.email;
@@ -88,222 +102,252 @@ class _Step1FormState extends State<Step1Form> {
       genderGroupValue = widget.employeeModel.gender;
       sliderValue = widget.employeeModel.maxage;
       hobbiesListNewItem = widget.employeeModel.hobbies;
+    } else if(widget.employeeModel == null) {
+      nameController.text = '';
+      emailController.text = '';
+      mobileController.text = '';
+      dateOfBirth.text = '';
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-           SizedBox(height: 15,),
-           TextFormField(
-             controller: nameController,
-             validator: (value){
-               if(value == null || value.isEmpty){
-                 return 'Please Enter some text';
-               }
-             },
-             onChanged: widget.nameValue,
+    return Form(
+      key: widget.form1Key,
+      autovalidateMode: AutovalidateMode.onUserInteraction,
 
-             decoration: InputDecoration(
-               hintText: 'Enter Name',
-               labelText: 'Enter Name',
-               border: OutlineInputBorder()
+      child: Column(
+        children: [
+             SizedBox(height: 15,),
+             TextFormField(
+               controller: nameController,
+               validator: (value){
+                 if(value == null || value.isEmpty){
+                  return 'Please Enter some text';
+                 } return null;
+               },
+               onChanged: widget.nameValue,
+
+               decoration: InputDecoration(
+                 hintText: 'Enter Name',
+                 labelText: 'Enter Name',
+                 border: OutlineInputBorder()
+               ),
              ),
-           ),
+            SizedBox(height: 15,),
+            TextFormField(
+              controller: emailController,
+              validator: (value){
+                if(isEmail(value!) == false){
+                  return 'Please Enter Valid Email';
+                }
+                return null;
+              },
+              onChanged: widget.emailValue,
+              decoration: InputDecoration(
+                hintText: 'Enter Email',
+                labelText: 'Enter Email',
+                border: OutlineInputBorder()
+              ),
+            ),
           SizedBox(height: 15,),
           TextFormField(
-            controller: emailController,
-            onChanged: widget.emailValue,
+            validator: (value){
+              if(validateMobile(value) == false) {
+                 return 'Please Enter Valid Number';
+              }
+              return null;
+            },
+            controller: mobileController,
+            onChanged: widget.mobileValue,
+            keyboardType: TextInputType.number,
             decoration: InputDecoration(
-              hintText: 'Enter Email',
-              labelText: 'Enter Email',
+              hintText: 'Enter Mobile',
+              labelText: 'Enter Mobile',
               border: OutlineInputBorder()
             ),
           ),
-        SizedBox(height: 15,),
-        TextFormField(
-          controller:mobileController,
-          onChanged: widget.mobileValue,
-          keyboardType: TextInputType.number,
-          decoration: InputDecoration(
-            hintText: 'Enter Mobile',
-            labelText: 'Enter Mobile',
-            border: OutlineInputBorder()
+          SizedBox(height: 15,),
+          TextFormField(
+            controller: dateOfBirth,
+            validator: (value){
+              if(dateOfBirth.text.isEmpty){
+                return "Please Select Date of Birth";
+              }
+            },
+            decoration: InputDecoration(
+              hintText: 'Date of Birth',
+              labelText: 'Click here to Select Date',
+              border: OutlineInputBorder(),
+              suffixIcon: Icon(Icons.date_range),
+            ),
+
+            onTap: () async {
+                await selectedDate(context);
+                widget.dateofbirthValue(dateOfBirth.text);
+            },
           ),
-        ),
-        SizedBox(height: 15,),
-        TextFormField(
-          controller: dateOfBirth,
-          decoration: InputDecoration(
-            hintText: 'Date of Birth',
-            labelText: 'Click here to Select Date',
-            border: OutlineInputBorder(),
-            suffixIcon: Icon(Icons.date_range),
+          SizedBox(height: 15,),
+          Container(
+            padding: EdgeInsets.symmetric(vertical: 10,horizontal: 10),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.all(Radius.circular(5)),
+              border:Border.all(color: Colors.black54)
+            ),
+            child: Column(
+              children: [
+                Text('Select Value',style: TextStyle(fontSize: 20),),
+                DropdownButton(
+                  // style: TextStyle(fontSize: 20,color: Colors.black,),
+                  isExpanded: true,
+                  value: dropDownValue,
+                    items: items.map<DropdownMenuItem<String>>((value) {
+                          return DropdownMenuItem(
+                              value: value,
+                              child: Text(value)
+                          );
+                    }).toList(),
+                    onChanged: (String? value){
+                      setState(() {
+                        dropDownValue = value!;
+                        widget.dropdownValue(dropDownValue);
+                        // print(widget.dropdownValue(dropDownValue);)
+                        // print(widget.);
+                      });
+                    }
+                ),
+              ],
+            ),
+          ),
+          SizedBox(height: 15,),
+          Container(
+            padding: EdgeInsets.only(top: 10),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.all(Radius.circular(5)),
+              border: Border.all(width: 1,color: Colors.black54)
+            ),
+            child: Column(
+              children: [
+                Text('Select Gender', style: TextStyle(fontSize: 20),),
+                ListTile(
+                  title: Text('Male'),
+                  leading: Radio(
+                    value: 'male',
+                    groupValue: genderGroupValue,
+                    onChanged: (value){
+                      setState(() {
+                        genderGroupValue = value!;
+                        // print(genderGroupValue);
+                        widget.genderValue(genderGroupValue);
+                      });
+                    },
+                  ),
+                ),
+                ListTile(
+                  title: Text('Female'),
+                  leading: Radio(
+                    value: 'female',
+                    groupValue: genderGroupValue,
+                    onChanged: (value){
+                      setState(() {
+                        genderGroupValue = value!;
+                        // print(genderGroupValue);
+                        widget.genderValue(genderGroupValue);
+                      });
+                    },
+                  ),
+                ),
+                ListTile(
+                  title: Text('Other'),
+                  leading: Radio(
+                    value: 'other',
+                    groupValue: genderGroupValue,
+                    onChanged: (value){
+                      setState(() {
+                        genderGroupValue = value!;
+                        // print(genderGroupValue);
+                        widget.genderValue(genderGroupValue);
+                      });
+                    },
+                  ),
+                ),
+
+
+              ],
+            ),
           ),
 
-          onTap: () async {
-              await selectedDate(context);
-              widget.dateofbirthValue(dateOfBirth.text);
-          },
-        ),
-        SizedBox(height: 15,),
-        Container(
-          padding: EdgeInsets.symmetric(vertical: 10,horizontal: 10),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.all(Radius.circular(5)),
-            border:Border.all(color: Colors.black54)
-          ),
-          child: Column(
-            children: [
-              Text('Select Value',style: TextStyle(fontSize: 20),),
-              DropdownButton(
-                // style: TextStyle(fontSize: 20,color: Colors.black,),
-                isExpanded: true,
-                value: dropDownValue,
+          SizedBox(height: 15,),
+          Container(
+            padding: EdgeInsets.only(top: 20),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.all(Radius.circular(5)),
+              border: Border.all(width: 1,color: Colors.black54)
+            ),
+            child: Column(
+              children: [
+                Text('What is Your Maximum Age',style: TextStyle(fontSize: 20),),
+                SizedBox(height: 10,),
+                Slider(
+                    value: sliderValue,
+                    max: 100,
+                    divisions: 100,
+                    label:sliderValue?.round().toString(),
 
-                  items: items.map<DropdownMenuItem<String>>((value) {
-                        return DropdownMenuItem(
-                            value: value,
-                            child: Text(value)
-                        );
+                    onChangeEnd: (value){
+                      setState(()  {
+                          sliderValue = value;
+                          widget.maxAgeValue(sliderValue);
+                        // }
+                      });
+                    },
+                  onChanged: (double value) {  },
+                ),
+              ],
+            ),
+          ),
+
+          SizedBox(height: 15,),
+          Container(
+            width: 310,
+            padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.all(Radius.circular(5)),
+              border: Border.all(width: 1,color: Colors.black54)
+            ),
+            child: Column(
+              children: [
+                Text('Select Hobbies',style: TextStyle(fontSize: 20),),
+                SizedBox(height: 10,),
+                Wrap(
+                  spacing: 15,
+                  children: hobbiesList.map((value) {
+                    return FilterChip(
+                        backgroundColor: Colors.pink.shade600,
+                        label: Text(value,style: TextStyle(color: Colors.white,fontSize: 15),),
+                        labelPadding: EdgeInsets.symmetric(vertical: 2,horizontal: 10),
+                        selected:hobbiesListNewItem.contains(value),
+                        onSelected: (selected){
+                           setState(() {
+                             if(selected){
+                               hobbiesListNewItem.add(value);
+                             }else{
+                               hobbiesListNewItem.remove(value);
+                             }
+                           });
+                           widget.hobbiesValue(hobbiesListNewItem);
+
+                        }
+
+
+                    );
                   }).toList(),
-                  onChanged: (String? value){
-                    setState(() {
-                      dropDownValue = value!;
-                      widget.dropdownValue(dropDownValue);
-                      // print(widget.dropdownValue(dropDownValue);)
-                      // print(widget.);
-                    });
-                  }
-              ),
-            ],
-          ),
-        ),
-        SizedBox(height: 15,),
-        Container(
-          padding: EdgeInsets.only(top: 10),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.all(Radius.circular(5)),
-            border: Border.all(width: 1,color: Colors.black54)
-          ),
-          child: Column(
-            children: [
-              Text('Select Gender', style: TextStyle(fontSize: 20),),
-              ListTile(
-                title: Text('Male'),
-                leading: Radio(
-                  value: 'male',
-                  groupValue: genderGroupValue,
-                  onChanged: (value){
-                    setState(() {
-                      genderGroupValue = value!;
-                      // print(genderGroupValue);
-                      widget.genderValue(genderGroupValue);
-                    });
-                  },
-                ),
-              ),
-              ListTile(
-                title: Text('Female'),
-                leading: Radio(
-                  value: 'female',
-                  groupValue: genderGroupValue,
-                  onChanged: (value){
-                    setState(() {
-                      genderGroupValue = value!;
-                      // print(genderGroupValue);
-                      widget.genderValue(genderGroupValue);
-                    });
-                  },
-                ),
-              ),
-              ListTile(
-                title: Text('Other'),
-                leading: Radio(
-                  value: 'other',
-                  groupValue: genderGroupValue,
-                  onChanged: (value){
-                    setState(() {
-                      genderGroupValue = value!;
-                      // print(genderGroupValue);
-                      widget.genderValue(genderGroupValue);
-                    });
-                  },
-                ),
-              )
-            ],
-          ),
-        ),
-
-        SizedBox(height: 15,),
-        Container(
-          padding: EdgeInsets.only(top: 20),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.all(Radius.circular(5)),
-            border: Border.all(width: 1,color: Colors.black54)
-          ),
-          child: Column(
-            children: [
-              Text('What is Your Maximum Age',style: TextStyle(fontSize: 20),),
-              SizedBox(height: 10,),
-              Slider(
-                  value: sliderValue,
-                  max: 100,
-                  divisions: 100,
-                  label:sliderValue?.round().toString(),
-
-                  onChangeEnd: (value){
-                    setState(()  {
-                        sliderValue = value;
-                        widget.maxAgeValue(sliderValue);
-                      // }
-                    });
-                  },
-                onChanged: (double value) {  },
-              ),
-            ],
-          ),
-        ),
-
-        SizedBox(height: 15,),
-        Container(
-          width: 310,
-          padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.all(Radius.circular(5)),
-            border: Border.all(width: 1,color: Colors.black54)
-          ),
-          child: Column(
-            children: [
-              Text('Select Hobbies',style: TextStyle(fontSize: 20),),
-              SizedBox(height: 10,),
-              Wrap(
-                spacing: 15,
-                children: hobbiesList.map((value) {
-                  return FilterChip(
-                      backgroundColor: Colors.pink.shade600,
-                      label: Text(value,style: TextStyle(color: Colors.white,fontSize: 15),),
-                      labelPadding: EdgeInsets.symmetric(vertical: 2,horizontal: 10),
-                      selected:hobbiesListNewItem.contains(value),
-                      onSelected: (selected){
-                         setState(() {
-                           if(selected){
-                             hobbiesListNewItem.add(value);
-                           }else{
-                             hobbiesListNewItem.remove(value);
-                           }
-
-                         });
-                         widget.hobbiesValue(hobbiesListNewItem);
-                      }
-                  );
-                }).toList(),
-              )
-            ],
-          ),
-        )
-      ],
+                )
+              ],
+            ),
+          )
+        ],
+      ),
     );
   }
 

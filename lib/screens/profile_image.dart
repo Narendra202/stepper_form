@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:hive/hive.dart';
-import 'profile_image.dart';
 
 class ProfileScreen extends StatefulWidget {
   @override

@@ -2,8 +2,6 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
-import 'package:hive_crud_app/screens/add_emp.dart';
 import 'package:hive_crud_app/screens/dashboard.dart';
 import 'package:hive_crud_app/screens/profile_image.dart';
 import 'package:hive_crud_app/screens/userlist.dart';
@@ -93,8 +91,8 @@ class _HomePageState extends State<HomePage> {
     Center(child: Text('Home',style: TextStyle(fontSize: 30),)),
     EmployeeList(),
     // EmployeeRegistration(),
-    Center(child: Text('Dashboard',style: TextStyle(fontSize: 30),)),
-    // DashBoardScreen(),
+    // Center(child: Text('Dashboard',style: TextStyle(fontSize: 30),)),
+    DashBoardScreen(),
     ProfileScreen()
     // Center(child: Text('Profile',style: TextStyle(fontSize: 30),)),
 

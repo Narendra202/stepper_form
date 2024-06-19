@@ -1,9 +1,5 @@
 
 
-// import 'dart:ffi';
-
-import 'dart:ui';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -11,7 +7,6 @@ import 'package:hive/hive.dart';
 import 'package:hive_crud_app/model/emp_model.dart';
 import 'package:hive_crud_app/screens/step1form.dart';
 import 'package:hive_crud_app/screens/step2form.dart';
-import 'package:hive_crud_app/screens/userlist.dart';
 
 class EmployeeRegistration extends StatefulWidget {
   const EmployeeRegistration({super.key, this.employeeModel, this.index});
@@ -23,6 +18,9 @@ class EmployeeRegistration extends StatefulWidget {
 }
 
 class _EmployeeRegistrationState extends State<EmployeeRegistration> {
+
+  final _form1Key = GlobalKey<FormState>();
+  final _form2Key = GlobalKey<FormState>();
 
   int selectedStep = 0;
 
@@ -41,6 +39,11 @@ class _EmployeeRegistrationState extends State<EmployeeRegistration> {
   late final Box databox;
 
 
+  var nameController;
+  var emailController;
+  var mobileController;
+  var dateofBirthController;
+
   @override
   void initState() {
     // TODO: implement initState
@@ -48,9 +51,17 @@ class _EmployeeRegistrationState extends State<EmployeeRegistration> {
     databox = Hive.box('employee');
 
     if(widget.employeeModel != null){
-
-     print(widget.index);
-
+      namefield = widget.employeeModel!.name;
+      emailfield = widget.employeeModel!.email;
+      mobilefield = widget.employeeModel!.mobile;
+      dateofbirthfield = widget.employeeModel!.dob;
+      dropdownfield = widget.employeeModel!.values;
+      genderfield = widget.employeeModel!.gender;
+      maxAgefield = widget.employeeModel!.maxage;
+      hobbiesfield = widget.employeeModel!.hobbies;
+      countryfield = widget.employeeModel!.country;
+      cityfield = widget.employeeModel!.city;
+      communefield = widget.employeeModel!.commune;
     }
   }
 
@@ -59,7 +70,7 @@ class _EmployeeRegistrationState extends State<EmployeeRegistration> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: Text('Registration Form',style: TextStyle(color: Colors.pink.shade600),),
+        title: widget.employeeModel != null ? Text('Edit Form',style: TextStyle(color: Colors.pink.shade600),) : Text('Registration Form',style: TextStyle(color: Colors.pink.shade600),),
         // backgroundColor: Colors.pink.shade600,
         leading: IconButton(
           onPressed: () {
@@ -115,10 +126,26 @@ class _EmployeeRegistrationState extends State<EmployeeRegistration> {
             },
           onStepContinue: () async{
 
-           if(selectedStep == 3 - 1){
+           if(selectedStep == 0){
+             if(_form1Key.currentState!.validate()){
+               setState(() {
+                 selectedStep = selectedStep + 1;
+               });
+             }
+           }
+          else if(selectedStep == 1){
+             if(_form2Key.currentState!.validate()){
+               setState(() {
+                 selectedStep = selectedStep + 1;
+               });
+             }
+           }
+
+           else if(selectedStep == 2){
 
              if(widget.employeeModel == null) {
-               EmployeeModel data = EmployeeModel(name: namefield,
+               EmployeeModel data = EmployeeModel(
+                   name: namefield,
                    email: emailfield,
                    mobile: mobilefield,
                    dob: dateofbirthfield,
@@ -129,8 +156,13 @@ class _EmployeeRegistrationState extends State<EmployeeRegistration> {
                    country: countryfield,
                    city: cityfield,
                    commune: communefield);
-               databox.add(data);
+
+
+                   databox.add(data);
+
+
              }
+
 
              else{
                EmployeeModel data = EmployeeModel(name: namefield,
@@ -149,7 +181,7 @@ class _EmployeeRegistrationState extends State<EmployeeRegistration> {
 
              Navigator.pop(context);
            }
-          else{
+             else{
              setState(() {
                selectedStep = selectedStep + 1;
              });
@@ -168,13 +200,13 @@ class _EmployeeRegistrationState extends State<EmployeeRegistration> {
                // content: Text('hello')
                content:Step1Form(nameValue: (value){ namefield = value;}, emailValue: (value){emailfield = value;},mobileValue: (value){mobilefield = value;},
                                   dateofbirthValue: (value){dateofbirthfield = value;}, dropdownValue: (value){dropdownfield = value;},genderValue: (value){genderfield = value;},
-                                  maxAgeValue: (value){maxAgefield = value;},hobbiesValue: (value){hobbiesfield = value;}, employeeModel: widget.employeeModel,)
+                                  maxAgeValue: (value){maxAgefield = value;},hobbiesValue: (value){hobbiesfield = value;}, employeeModel: widget.employeeModel,form1Key: _form1Key,)
            ),
            Step(
                state : selectedStep > 1 ? StepState.complete : StepState.indexed,
                isActive : selectedStep >= 1,
                title: Text('Step 2'),
-               content: Step2Form(countryName: (value){countryfield = value;}, cityName: (value){cityfield = value;}, communeName: (value){communefield =value;},employeeModel: widget.employeeModel,)
+               content: Step2Form(countryName: (value){countryfield = value;}, cityName: (value){cityfield = value;}, communeName: (value){communefield =value;},employeeModel: widget.employeeModel,form2Key: _form2Key,)
            ),
            Step(
              state : selectedStep > 2 ? StepState.complete : StepState.indexed,
